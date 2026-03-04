@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nano Banana 2 - Image Sizes & Ratios</title>
+  <style>
+    :root {
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: #1f2937;
+      background: #f3f4f6;
+    }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: #f3f4f6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      padding: 20px;
+    }
+    h1 { margin: 0 0 6px; font-size: 1.5rem; }
+    p { margin: 0 0 16px; color: #4b5563; }
+    .controls {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    input, select {
+      padding: 10px 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 0.95rem;
+    }
+    input { min-width: 240px; }
+    .table-wrap {
+      overflow: auto;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 980px;
+    }
+    th, td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      white-space: nowrap;
+    }
+    th {
+      position: sticky;
+      top: 0;
+      background: #f9fafb;
+      cursor: pointer;
+      user-select: none;
+    }
+    th .sort-indicator {
+      color: #6b7280;
+      margin-left: 6px;
+      font-size: 0.8rem;
+    }
+    tr:hover td { background: #fafafa; }
+    .muted { color: #6b7280; font-size: 0.85rem; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>Nano Banana 2 Image Sizes & Ratios</h1>
+    <p>Interactive table converted from the provided image. Search, filter orientation, and click column headers to sort.</p>
+
+    <div class="controls">
+      <input id="search" type="search" placeholder="Search aspect ratio or resolution..." />
+      <select id="orientationFilter">
+        <option value="all">All orientations</option>
+        <option value="square">Square</option>
+        <option value="landscape">Landscape</option>
+        <option value="portrait">Portrait</option>
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table id="ratioTable">
+        <thead>
+          <tr>
+            <th data-key="aspectRatio">Aspect ratio <span class="sort-indicator"></span></th>
+            <th data-key="res512">512px resolution <span class="sort-indicator"></span></th>
+            <th data-key="tokens05k">0.5K tokens <span class="sort-indicator"></span></th>
+            <th data-key="res1k">1K resolution <span class="sort-indicator"></span></th>
+            <th data-key="tokens1k">1K tokens <span class="sort-indicator"></span></th>
+            <th data-key="res2k">2K resolution <span class="sort-indicator"></span></th>
+            <th data-key="tokens2k">2K tokens <span class="sort-indicator"></span></th>
+            <th data-key="res4k">4K resolution <span class="sort-indicator"></span></th>
+            <th data-key="tokens4k">4K tokens <span class="sort-indicator"></span></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="muted" id="resultsCount"></div>
+  </main>
+
+  <script>
+    const rows = [
+      { aspectRatio: '1:1', res512: '512x512', tokens05k: 747, res1k: '1024x1024', tokens1k: 1120, res2k: '2048x2048', tokens2k: 1120, res4k: '4096x4096', tokens4k: 2000 },
+      { aspectRatio: '1:4', res512: '256x1024', tokens05k: 747, res1k: '512x2048', tokens1k: 1120, res2k: '1024x4096', tokens2k: 1120, res4k: '2048x8192', tokens4k: 2000 },
+      { aspectRatio: '1:8', res512: '192x1536', tokens05k: 747, res1k: '384x3072', tokens1k: 1120, res2k: '768x6144', tokens2k: 1120, res4k: '1536x12288', tokens4k: 2000 },
+      { aspectRatio: '2:3', res512: '424x632', tokens05k: 747, res1k: '848x1264', tokens1k: 1120, res2k: '1696x2528', tokens2k: 1120, res4k: '3392x5056', tokens4k: 2000 },
+      { aspectRatio: '3:2', res512: '632x424', tokens05k: 747, res1k: '1264x848', tokens1k: 1120, res2k: '2528x1696', tokens2k: 1120, res4k: '5056x3392', tokens4k: 2000 },
+      { aspectRatio: '3:4', res512: '448x600', tokens05k: 747, res1k: '896x1200', tokens1k: 1120, res2k: '1792x2400', tokens2k: 1120, res4k: '3584x4800', tokens4k: 2000 },
+      { aspectRatio: '4:1', res512: '1024x256', tokens05k: 747, res1k: '2048x512', tokens1k: 1120, res2k: '4096x1024', tokens2k: 1120, res4k: '8192x2048', tokens4k: 2000 },
+      { aspectRatio: '4:3', res512: '600x448', tokens05k: 747, res1k: '1200x896', tokens1k: 1120, res2k: '2400x1792', tokens2k: 1120, res4k: '4800x3584', tokens4k: 2000 },
+      { aspectRatio: '4:5', res512: '464x576', tokens05k: 747, res1k: '928x1152', tokens1k: 1120, res2k: '1856x2304', tokens2k: 1120, res4k: '3712x4608', tokens4k: 2000 },
+      { aspectRatio: '5:4', res512: '576x464', tokens05k: 747, res1k: '1152x928', tokens1k: 1120, res2k: '2304x1856', tokens2k: 1120, res4k: '4608x3712', tokens4k: 2000 },
+      { aspectRatio: '8:1', res512: '1536x192', tokens05k: 747, res1k: '3072x384', tokens1k: 1120, res2k: '6144x768', tokens2k: 1120, res4k: '12288x1536', tokens4k: 2000 },
+      { aspectRatio: '9:16', res512: '384x688', tokens05k: 747, res1k: '768x1376', tokens1k: 1120, res2k: '1536x2752', tokens2k: 1120, res4k: '3072x5504', tokens4k: 2000 },
+      { aspectRatio: '16:9', res512: '688x384', tokens05k: 747, res1k: '1376x768', tokens1k: 1120, res2k: '2752x1536', tokens2k: 1120, res4k: '5504x3072', tokens4k: 2000 },
+      { aspectRatio: '21:9', res512: '792x168', tokens05k: 747, res1k: '1584x672', tokens1k: 1120, res2k: '3168x1344', tokens2k: 1120, res4k: '6336x2688', tokens4k: 2000 }
+    ];
+
+    const tableBody = document.querySelector('#ratioTable tbody');
+    const searchInput = document.getElementById('search');
+    const orientationFilter = document.getElementById('orientationFilter');
+    const resultsCount = document.getElementById('resultsCount');
+    const headers = document.querySelectorAll('th[data-key]');
+
+    let sortKey = 'aspectRatio';
+    let sortDir = 'asc';
+
+    const ratioValue = (ratio) => {
+      const [a, b] = ratio.split(':').map(Number);
+      return a / b;
+    };
+
+    const getOrientation = (ratio) => {
+      const value = ratioValue(ratio);
+      if (value === 1) return 'square';
+      return value > 1 ? 'landscape' : 'portrait';
+    };
+
+    const compareValues = (a, b, key) => {
+      if (key === 'aspectRatio') return ratioValue(a[key]) - ratioValue(b[key]);
+      if (typeof a[key] === 'number') return a[key] - b[key];
+      return String(a[key]).localeCompare(String(b[key]));
+    };
+
+    const render = () => {
+      const search = searchInput.value.trim().toLowerCase();
+      const orientation = orientationFilter.value;
+
+      const filtered = rows
+        .filter((row) => {
+          const text = Object.values(row).join(' ').toLowerCase();
+          const matchesSearch = !search || text.includes(search);
+          const matchesOrientation = orientation === 'all' || getOrientation(row.aspectRatio) === orientation;
+          return matchesSearch && matchesOrientation;
+        })
+        .sort((a, b) => {
+          const result = compareValues(a, b, sortKey);
+          return sortDir === 'asc' ? result : -result;
+        });
+
+      tableBody.innerHTML = filtered.map((row) => `
+        <tr>
+          <td>${row.aspectRatio}</td>
+          <td>${row.res512}</td>
+          <td>${row.tokens05k}</td>
+          <td>${row.res1k}</td>
+          <td>${row.tokens1k}</td>
+          <td>${row.res2k}</td>
+          <td>${row.tokens2k}</td>
+          <td>${row.res4k}</td>
+          <td>${row.tokens4k}</td>
+        </tr>
+      `).join('');
+
+      resultsCount.textContent = `${filtered.length} row(s)`;
+
+      headers.forEach((header) => {
+        const indicator = header.querySelector('.sort-indicator');
+        indicator.textContent = header.dataset.key === sortKey ? (sortDir === 'asc' ? '▲' : '▼') : '';
+      });
+    };
+
+    headers.forEach((header) => {
+      header.addEventListener('click', () => {
+        const key = header.dataset.key;
+        if (sortKey === key) {
+          sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+        } else {
+          sortKey = key;
+          sortDir = 'asc';
+        }
+        render();
+      });
+    });
+
+    searchInput.addEventListener('input', render);
+    orientationFilter.addEventListener('change', render);
+
+    render();
+  </script>
+</body>
+</html>
